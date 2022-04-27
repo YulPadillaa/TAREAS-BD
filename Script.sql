@@ -1,43 +1,43 @@
 --tarea 1: Yuliana Padilla 188037
--- NOTA: como se recomendo en clase, Alejandra, Elisa y Yuliana compartimos nuestros conocimientos despuÈs de haber elaborado de manera individual nuestra tarea,
+-- NOTA: como se recomendo en clase, Alejandra, Elisa y Yuliana compartimos nuestros conocimientos despu√©s de haber elaborado de manera individual nuestra tarea,
 -- cada una sabe como hacer cada pregunta, sin embargo, intercambiamos opiniones y formas de hacerlo para enriquecer nuestro conocimiento en la materia. 
 --EJERCICIO:
--- QuÈ contactos de proveedores tienen la posiciÛn de sales representative?
+-- Qu√© contactos de proveedores tienen la posici√≥n de sales representative?
 	select contact_name, contact_title 
 	from suppliers 
 	where contact_title = 'Sales Representative';
 
--- QuÈ contactos de proveedores no son marketing managers?
+-- Qu√© contactos de proveedores no son marketing managers?
 	select contact_name, contact_title 
 	from suppliers 
 	where not contact_title = 'Marketing Manager';
 
--- Cuales Ûrdenes no vienen de clientes en Estados Unidos? <> significa diferente a 
+-- Cuales √≥rdenes no vienen de clientes en Estados Unidos? <> significa diferente a 
 	select order_id  from orders where ship_country <> 'USA';
 
--- QuÈ productos de los que transportamos son quesos?
+-- Qu√© productos de los que transportamos son quesos?
 	select p.product_id, p.product_name
 	from products p 
 	where p.category_id = 4;
 
--- QuÈ ordenes van a BÈlgica o Francia? ** look 4 the opposite of <>
+-- Qu√© ordenes van a B√©lgica o Francia? ** look 4 the opposite of <>
 	select * from orders where (ship_country='Belgium'or ship_country= 'France');
 
--- QuÈ Ûrdenes van a LATAM? 
+-- Qu√© √≥rdenes van a LATAM? 
 	select * from orders where (ship_country='Venezuela'or ship_country= 'Argentina' or ship_country='Mexico');
 
--- QuÈ Ûrdenes no van a LATAM?
+-- Qu√© √≥rdenes no van a LATAM?
 	select * from orders where (ship_country<>'Venezuela'or ship_country<> 'Argentina' or ship_country<>'Mexico');
 
 -- Necesitamos los nombres completos de los empleados, nombres y apellidos unidos en un mismo registro ** tengo duda en este
 	select concat(first_name, ' ' ,last_name) as fullname from employees;
 
--- Cu·nta lana tenemos en inventario?
+-- Cu√°nta lana tenemos en inventario?
 	select sum(units_in_stock * unit_price) as money_in_inventory 
 	from products p  ;
 
 
--- Cuantos clientes tenemos de cada paÌs?
+-- Cuantos clientes tenemos de cada pa√≠s?
 	select country, count(*) from customers group by country;
 
 -- group by, count, where, 
@@ -45,32 +45,55 @@
 
 --EJERCICIO MOD 8:
 
--- Obtener un reporte de edades de los empleados para checar su elegibilidad para seguro de gastos mÈdicos menores.
+-- Obtener un reporte de edades de los empleados para checar su elegibilidad para seguro de gastos m√©dicos menores.
 	select first_name, last_name, age(now(), birth_date) as age from employees order by birth_date;
--- Cu·l es la orden m·s reciente por cliente?
+-- Cu√°l es la orden m√°s reciente por cliente?
 	select customer_id, order_id, max (order_date) as mas_reciente from orders group by ( customer_id, order_id);
 
--- De nuestros clientes, quÈ funciÛn desempeÒan y cu·ntos son? Û quÈ trabajos tienen nuestros clientes y cu·ntos hay por cada tipo de trabajo?
+-- De nuestros clientes, qu√© funci√≥n desempe√±an y cu√°ntos son? √≥ qu√© trabajos tienen nuestros clientes y cu√°ntos hay por cada tipo de trabajo?
 	select contact_title, count(*) from customers group by contact_title;
 
--- Cu·ntos productos tenemos de cada categorÌa?
+-- Cu√°ntos productos tenemos de cada categor√≠a?
 	select p.category_id, c.category_name, count(p.product_id) as nom_categoria 
 	from products p join categories c on c.category_id = p.category_id 
 	group by (p.category_id, c.category_id)
 
--- CÛmo podemos generar el reporte de reorder?
+-- C√≥mo podemos generar el reporte de reorder?
 	select p.product_id, p.product_name, p.units_in_stock, p.reorder_level
 	from products p
 	where p.units_in_stock < p.reorder_level;
 
 
--- A donde va nuestro envÌo m·s voluminoso?
-	select 
+-- A donde va nuestro env√≠o m√°s voluminoso?
+	select o.ship_country, max(o.ship_city) as city, max(o.ship_address) as address , max(od.quantity) as max_units
+	from order_details od
+	inner join orders o on (o.order_id = od.order_id)
+	group by o.ship_country
+	order by max_units desc limit 1; 
 
--- CÛmo creamos una columna en customers que nos diga si un cliente es bueno, regular, o malo?
+-- C√≥mo creamos una columna en customers que nos diga si un cliente es bueno, regular, o malo?
+	select t.contact_name, t.total,
+	 (case
+		 when t.total < 10000 then 'malo'
+		 when t.total >= 10000 and t.total <100000 then 'regular'
+		 else 'bueno'
+	 end) as categoria
+	from (
+	select c.contact_name,
+	 sum(od.unit_price*od.quantity*(1-od.discount))as total
+	from customers c
+	join orders o using (customer_id)
+	join order_details od using (order_id)
+	group by c.contact_name) as t
+	order by categoria, t.contact_name;
 
--- QuÈ colaboradores chambearon durante las fiestas de navidad?
+-- Qu√© colaboradores chambearon durante las fiestas de navidad?
+	select distinct  o.employee_id, e.first_name, e.last_name from orders o join employees e on o.employee_id = e.employee_id 
+	where (date_part('month', o.shipped_date) = 12 and date_part('day',o.shipped_date)= 25);
 
--- QuÈ productos mandamos en navidad?
+-- Qu√© productos mandamos en navidad?
+	select od.product_id, p.product_name from orders o join order_details od on o.order_id = od.order_id join products p on p.product_id  = od.product_id
+	where (date_part('month', o.shipped_date) = 12 and date_part('day',o.shipped_date)= 25);
 
--- QuÈ paÌs recibe el mayor volumen de producto?
+-- Qu√© pa√≠s recibe el mayor volumen de producto?
+	select ship_country, count (order_id) as orders from orders o group by ship_country order by orders desc limit 1;
