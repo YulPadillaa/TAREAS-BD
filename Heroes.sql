@@ -32,3 +32,12 @@ select a.avenger_nombre ,a.avenger_direccion
 from avenger a 
 where a.avenger_direccion like '%.' or a.avenger_direccion not like '%@%.%' or a.avenger_direccion like '%^%';
 
+--aquí hay un query más general 
+select a.avenger_nombre ,a.avenger_direccion
+from avenger a
+where a.avenger_direccion like '%.' or a.avenger_direccion not like '%@%.%' or a.avenger_direccion like '%^%' or a.avenger_direccion like '%_%' or a.avenger_direccion like '%.' or a.avenger_direccion like '%@'
+or a.avenger_direccion like '%-%' or a.avenger_direccion like '@%' or a.avenger_direccion like '%@%0%' or a.avenger_direccion like '%@%1%' or a.avenger_direccion like '%@%2%' or a.avenger_direccion like '%@%3%' 
+or a.avenger_direccion like '%@%4%' or a.avenger_direccion like '%@%5%' or a.avenger_direccion like '%@%6%' or a.avenger_direccion like '%@%7%' or a.avenger_direccion like '%@%8%' or m.mail like '%@%9%'
+or a.avenger_direccion like '%+%' or a.avenger_direccion like '%*%' or a.avenger_direccion like '%/%' or a.avenger_direccion like '%(%' or a.avenger_direccion like '%{%' or a.avenger_direccion like '%[%' 
+or a.avenger_direccion like '%\%' ora.avenger_direccion like '%)%' or a.avenger_direccion like '%}%' or a.avenger_direccion like '%]%' or a.avenger_direccion like '%&%' or a.avenger_direccion like '%$%' 
+or a.avenger_direccion like '%#%' or a.avenger_direccion like '%"%' or a.avenger_direccion like '%!%' or a.avenger_direccion like '%?%' or a.avenger_direccion like '%¡%' or a.avenger_direccion like '%¿%' ;
