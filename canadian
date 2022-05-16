@@ -1,1 +1,42 @@
-k
+-- Yul Padilla 188037 **NOTA: como se recomendo en clase, Alejandra y Yuliana compartimos nuestros conocimientos después de haber elaborado de manera individual nuestra tarea,
+-- cada una sabe como hacer cada pregunta, sin embargo, intercambiamos opiniones y formas de hacerlo para enriquecer nuestro conocimiento en la materia. 
+
+
+--Cómo obtenemos todos los nombres y correos de nuestros clientes canadienses para una campaña?
+
+select concat(c2.first_name, ' ', c2.last_name), c2.email from country c
+join city using (country_id) 
+join address a using (city_id) 
+join store s using (address_id) 
+join customer c2 using (store_id) where c.country='Canada'; 
+
+--Qué cliente ha rentado más de nuestra sección de adultos?
+select 
+	c.customer_id,
+	c.first_name || ' ' || c.last_name as nombre_completo,
+	count(r.rental_id) AS mas_rentas
+from customer c
+join rental r using (customer_id)
+join inventory i using (inventory_id)
+join film f using (film_id) 
+	where f.rating = 'NC-17'
+group by (c.customer_id, nombre_completo)
+	order by mas_rentas desc
+		limit 3; -- puse 3 para evitar empates, J & C estaban empatados. Con el tercero nos damos cuenta
+
+ 
+
+--Qué películas son las más rentadas en todas nuestras stores?
+select f.film_id, f.title
+count (r.rental_id) as rented
+from rental r
+join inventory i using (inventory_id) --lo joineamos con inventario
+join film f  using (film_id) --y pelis
+group by (f.film_id, f.title) --los agrupamos
+ order by rented desc; --ordenamos de manera desc
+
+-- Cuál es nuestro revenue por store?
+select store_id,  sum(p.amount) from payment p 
+join staff s using (staff_id) 
+join store using (store_id) 
+group by store_id; 
