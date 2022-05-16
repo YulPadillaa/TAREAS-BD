@@ -27,7 +27,7 @@ group by (c.customer_id, nombre_completo)
  
 
 --Qué películas son las más rentadas en todas nuestras stores?
-select f.film_id, f.title
+select f.film_id, f.title,
 count (r.rental_id) as rented
 from rental r
 join inventory i using (inventory_id) --lo joineamos con inventario
